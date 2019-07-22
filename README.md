@@ -1,5 +1,5 @@
 # 🤖 MrKio Discord
-My Personal Discord bot that has a lot of features detecting languages, telling you the current time, ect...
+My Personal Discord bot that has a lot of features detecting languages, telling you the current time, etc...
 
 [![License: MPL 2.0](https://img.shields.io/badge/License-MPL%202.0-brightgreen.svg)](https://opensource.org/licenses/MPL-2.0)
 
