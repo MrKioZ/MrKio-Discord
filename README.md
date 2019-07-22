@@ -3,7 +3,7 @@ A Personal Discord bot
 
 [![Build Status](https://img.shields.io/discord/578509348364484608.svg)](#)
 
-# Dependencies
+# 📋 Dependencies
 `Python 3.6` REQUIRED
 
 `FFmpeg` (OPTIONAL) to be able to run music
@@ -18,3 +18,6 @@ pip install -r requirements.txt
 Get a token string for your bot from by registering your bot here: https://discordapp.com/developers 
 
 You will need bot's client ID to invite it your server you can generate your own invite using this website https://discordapi.com/permissions.html
+
+# 📄 License
+.
