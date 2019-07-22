@@ -6,6 +6,8 @@ REDDIT_CLIENT_SECRET = os.getenv('REDDIT_CLIENT_SECRET')
 
 Owner_ID = 324786471678771200
 
+EMBED_COLOR = 0xff171d
+
 BOT_PREFIX = '!'
 
 help_desc = f"""
