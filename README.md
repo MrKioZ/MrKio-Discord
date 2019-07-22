@@ -1,7 +1,7 @@
 # MrKio Discord
 A Personal Discord bot
 
-https://img.shields.io/discord/578509348364484608.svg
+[![Build Status](https://img.shields.io/discord/578509348364484608.svg)](#)
 
 # Dependencies
 `Python 3.6` REQUIRED
