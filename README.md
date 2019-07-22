@@ -3,7 +3,7 @@ My Personal Discord bot that has a lot of features detecting languages, telling 
 
 [![License: MPL 2.0](https://img.shields.io/badge/License-MPL%202.0-brightgreen.svg)](https://opensource.org/licenses/MPL-2.0)
 
-Feel free to [invite](https://discordapp.com/oauth2/authorize?client_id=462709392383410196&scope=bot&permissions=805314622) the bot
+Feel free to [invite](https://discordapp.com/oauth2/authorize?client_id=462709392383410196&scope=bot&permissions=805314622) the bot to your discord server
 
 ## 📋 Dependencies
 `Python 3.6` REQUIRED
