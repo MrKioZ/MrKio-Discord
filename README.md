@@ -1,5 +1,5 @@
 # MrKio Discord
-A Personal Discord bot
+A Personal Discord bot that has a lot of features detecting languages, telling you the current time, ect...
 
 [![Build Status](https://img.shields.io/discord/578509348364484608.svg)](#)
 
