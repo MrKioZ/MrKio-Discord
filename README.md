@@ -3,7 +3,7 @@ A Personal Discord bot that has a lot of features detecting languages, telling y
 
 [![Build Status](https://img.shields.io/discord/578509348364484608.svg)](#)
 [![License: MPL 2.0](https://img.shields.io/badge/License-MPL%202.0-brightgreen.svg)](https://opensource.org/licenses/MPL-2.0)
-[![Heroku](https://heroku-badge.herokuapp.com/?app=heroku-badge)](#)
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
 
 # 📋 Dependencies
 `Python 3.6` REQUIRED
