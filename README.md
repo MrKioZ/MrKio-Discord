@@ -21,4 +21,4 @@ Get a token string for your bot from by registering your bot here: https://disco
 You will need bot's client ID to invite it your server you can generate your own invite using this website https://discordapi.com/permissions.html
 
 # 📄 License
-MrKio bot is Mozilla Public License Version 2.0 as found in the [License](https://github.com/MrKioZ/MrKioDiscord/License)
+MrKio bot is MPL V2 as found in the [License](https://github.com/MrKioZ/MrKioDiscord/License)
