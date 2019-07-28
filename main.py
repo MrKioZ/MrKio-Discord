@@ -201,7 +201,7 @@ async def google(ctx):
         content = content[1]
         await ctx.send(google(content))
     else:
-        ctx.send('**!Google <Query>**')    
+        await ctx.send('**!Google <Query>**')    
 
 @client.command(pass_context=True)
 async def say(ctx):
