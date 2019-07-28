@@ -196,8 +196,12 @@ async def bitcoin(ctx):
 
 @client.command(pass_context=True)
 async def google(ctx):
-    content = ctx.message.content.split(" ", 1)[1]
-    await ctx.send(googlesearch(content))
+    content = ctx.message.content.split(" ", 1)
+    if len(content) > 1:
+        content = content[1]
+        await ctx.send(google(content))
+    else:
+        ctx.send('**!Google <Query>**')    
 
 @client.command(pass_context=True)
 async def say(ctx):
