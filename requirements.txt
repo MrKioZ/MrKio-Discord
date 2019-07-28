@@ -5,3 +5,4 @@ youtube_dl
 langdetect
 iso-639
 praw
+google
