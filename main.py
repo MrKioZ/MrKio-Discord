@@ -194,7 +194,7 @@ async def bitcoin(ctx):
     embed.set_footer(text="Requestsed by {}#{}".format(ctx.author.name,ctx.author.discriminator))
     await ctx.send(embed=embed)
 
-@client.commands(pass_context=True)
+@client.command(pass_context=True)
 async def google(ctx):
     content = ctx.message.content.split(" ", 1)[1]
     await ctx.send(googlesearch(content))
