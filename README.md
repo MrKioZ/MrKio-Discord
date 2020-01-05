@@ -4,7 +4,6 @@ My Personal Discord bot that has a lot of features detecting languages, telling 
 [![License: MPL 2.0](https://img.shields.io/badge/License-MPL%202.0-brightgreen.svg)](https://opensource.org/licenses/MPL-2.0)
 [![PyPi Python Versions](https://img.shields.io/pypi/pyversions/yt2mp3.svg)](https://pypi.python.org/pypi/yt2mp3/)
 [![GitHub last commit](https://img.shields.io/github/last-commit/MrKioZ/MrKioDiscord.svg?style=flat)]()
-[![GitHub commit activity the past week, 4 weeks](https://img.shields.io/github/commit-activity/y/MrKioZ/MrKioDiscord.svg?style=flat)]()
 
 ## 📋 Dependencies
 `Python 3.6` REQUIRED
