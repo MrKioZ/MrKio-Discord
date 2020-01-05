@@ -5,9 +5,6 @@ My Personal Discord bot that has a lot of features detecting languages, telling 
 [![PyPi Python Versions](https://img.shields.io/pypi/pyversions/yt2mp3.svg)](https://pypi.python.org/pypi/yt2mp3/)
 [![GitHub last commit](https://img.shields.io/github/last-commit/MrKioZ/MrKioDiscord.svg?style=flat)]()
 [![GitHub commit activity the past week, 4 weeks](https://img.shields.io/github/commit-activity/y/MrKioZ/MrKioDiscord.svg?style=flat)]()
-[![Discord Chat](https://img.shields.io/discord/602825071760900107.svg)](https://discord.gg/7yHMAba) 
-
-Feel free to [invite](https://discordapp.com/oauth2/authorize?client_id=462709392383410196&scope=bot&permissions=805314622) the bot to your discord server
 
 ## 📋 Dependencies
 `Python 3.6` REQUIRED
