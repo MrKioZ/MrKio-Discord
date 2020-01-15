@@ -4,6 +4,7 @@ from config import Embed_Color
 from config import WELCOME_MODE
 from config import DEFAULT_ROLE_ID
 from config import WELCOME_Channel_ID
+from config import SERVER_NAME
 
 class Greetings(commands.Cog, name='Greeting'):
     def __init__(self, bot):
@@ -21,9 +22,7 @@ class Greetings(commands.Cog, name='Greeting'):
 
             embed = discord.Embed(color=Embed_Color)
             help_desc = f"""
-            Welcome {member.mention} to Kritos Network's Discord Server
-
-            If you need assistance make sure to join our Teamspeak
+            Welcome {member.mention} to {SERVER_NAME} Discord Server
             """
 
             embed.add_field(name='» Welcome to Kritos Network', value=help_desc)
