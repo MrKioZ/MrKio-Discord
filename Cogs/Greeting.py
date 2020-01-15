@@ -25,8 +25,8 @@ class Greetings(commands.Cog, name='Greeting'):
             Welcome {member.mention} to {SERVER_NAME} Discord Server
             """
 
-            embed.add_field(name='» Welcome to Kritos Network', value=help_desc)
-            embed.set_footer('ts.kritos.net')
+            embed.add_field(name='» Welcome to {}'.format(SERVER_NAME), value=help_desc)
+            #embed.set_footer('')
 
             if WELCOME_MODE.lower() == 'dm':
                 await member.send(embed=embed)
