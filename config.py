@@ -13,7 +13,7 @@ Owner_ID = 324786471678771200
 EMBED_COLOR = 0xff171d
 
 BOT_PREFIX = '!'
-
+"test"
 help_desc = f"""
 `!help` Shows this menu
 `!play` Plays a music
