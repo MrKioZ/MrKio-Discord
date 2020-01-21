@@ -14,6 +14,9 @@ class ChatAI(commands.Cog):
     async def on_message(self, message):
         MemberName = message.author.name
         channel = message.channel
+
+        print(message.content)
+
         if message.content.startswith("<@{self.bot.id}>"):
 
             #Getting the message without the mention
