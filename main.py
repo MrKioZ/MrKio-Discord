@@ -7,9 +7,12 @@ import time as timelibrary
 from datetime import date
 from iso639 import languages
 from langdetect import detect
+from Cogs.ChatAI import ChatAI
 
 client = commands.Bot(command_prefix=BOT_PREFIX)
 client.remove_command('help')
+
+client.add_cog(ChatAI(client))
 
 async def changing_status():
     await client.wait_until_ready()
