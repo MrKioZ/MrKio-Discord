@@ -1,5 +1,5 @@
 import discord
-from discor.ext import commands
+from discord.ext import commands
 # import pytorch
 
 # class DQN(nn.Module):
