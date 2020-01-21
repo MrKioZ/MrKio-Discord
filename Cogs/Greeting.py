@@ -6,6 +6,11 @@ from config import DEFAULT_ROLE_ID
 from config import WELCOME_Channel_ID
 from config import SERVER_NAME
 
+class improtance():
+
+    def __init__(self):
+        return "Hello world"
+
 class Greetings(commands.Cog, name='Greeting'):
     def __init__(self, bot):
         self.bot = bot

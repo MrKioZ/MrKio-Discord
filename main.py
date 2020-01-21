@@ -1,4 +1,4 @@
-import discord, asyncio, youtube_dl, random, os
+import discord, asyncio, youtube_dl, random, praw, os
 from discord.ext import commands
 from discord.voice_client import VoiceClient
 from requests import get
@@ -7,7 +7,6 @@ import time as timelibrary
 from datetime import date
 from iso639 import languages
 from langdetect import detect
-import praw
 
 client = commands.Bot(command_prefix=BOT_PREFIX)
 client.remove_command('help')
@@ -32,7 +31,7 @@ async def changing_status():
 async def calculate_age(born):
     today = date.today()
     return today.year - born.year - ((today.month, today.day) < (born.month, born.day))
-"test"
+
 async def get_current_time():
     pm = False
     t = timelibrary.localtime()
@@ -68,26 +67,10 @@ async def reminder():
 youtube_dl.utils.bug_reports_message = lambda: ''
 
 
-ytdl_format_options = {
-    'format': 'bestaudio/best',
-    'outtmpl': '%(extractor)s-%(id)s-%(title)s.%(ext)s',
-    'restrictfilenames': True,
-    'noplaylist': True,
-    'nocheckcertificate': True,
-    'ignoreerrors': False,
-    'logtostderr': False,
-    'quiet': True,
-    'no_warnings': True,
-    'default_search': 'auto',
-    'source_address': '0.0.0.0' # bind to ipv4 since ipv6 addresses cause issues sometimes
-}
-
-ffmpeg_options = {
-    'options': '-vn'
-}
+ytdl_format_options = {'format': 'bestaudio/best','outtmpl': '%(extractor)s-%(id)s-%(title)s.%(ext)s','restrictfilenames': True,'noplaylist': True,'nocheckcertificate': True,'ignoreerrors': False,'logtostderr': False,'quiet': True,'no_warnings': True,'default_search': 'auto','source_address': '0.0.0.0'}
+ffmpeg_options = {'options': '-vn'}
 
 ytdl = youtube_dl.YoutubeDL(ytdl_format_options)
-
 
 class YTDLSource(discord.PCMVolumeTransformer):
     def __init__(self, source, *, data, volume=0.5):
