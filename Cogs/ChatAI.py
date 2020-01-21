@@ -15,9 +15,7 @@ class ChatAI(commands.Cog):
         MemberName = message.author.name
         channel = message.channel
 
-        #print(message.content)
-
-        if message.content.startswith("<@!{self.bot.id}>"):
+        if message.content.startswith("<@!{self.bot.user.id}>"):
 
             #Getting the message without the mention
             message = message.content.split(" ", 1)[1]
