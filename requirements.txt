@@ -6,4 +6,3 @@ langdetect
 iso-639
 praw
 google
-pytorch
