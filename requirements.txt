@@ -6,4 +6,4 @@ langdetect
 iso-639
 praw
 google
-PyNaCl
+pynacl
