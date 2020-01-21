@@ -8,11 +8,10 @@ from datetime import date
 from iso639 import languages
 from langdetect import detect
 from Cogs.ChatAI import ChatAI
+from Cogs.MusicManager import Music
 
 client = commands.Bot(command_prefix=BOT_PREFIX)
 client.remove_command('help')
-
-client.add_cog(ChatAI(client))
 
 async def changing_status():
     await client.wait_until_ready()
@@ -66,40 +65,14 @@ async def reminder():
 
         await asnycio.sleep(30)
 
-# Suppress noise about console usage from errors
-youtube_dl.utils.bug_reports_message = lambda: ''
-
-
-ytdl_format_options = {'format': 'bestaudio/best','outtmpl': '%(extractor)s-%(id)s-%(title)s.%(ext)s','restrictfilenames': True,'noplaylist': True,'nocheckcertificate': True,'ignoreerrors': False,'logtostderr': False,'quiet': True,'no_warnings': True,'default_search': 'auto','source_address': '0.0.0.0'}
-ffmpeg_options = {'options': '-vn'}
-
-ytdl = youtube_dl.YoutubeDL(ytdl_format_options)
-
-class YTDLSource(discord.PCMVolumeTransformer):
-    def __init__(self, source, *, data, volume=0.5):
-        super().__init__(source, volume)
-
-        self.data = data
-
-        self.title = data.get('title')
-        self.url = data.get('url')
-
-    @classmethod
-    async def from_url(cls, url, *, loop=None, stream=False):
-        loop = loop or asyncio.get_event_loop()
-        data = await loop.run_in_executor(None, lambda: ytdl.extract_info(url, download=not stream))
-
-        if 'entries' in data:
-            # take first item from a playlist
-            data = data['entries'][0]
-
-        filename = data['url'] if stream else ytdl.prepare_filename(data)
-        return cls(discord.FFmpegPCMAudio(filename, **ffmpeg_options), data=data)
-
 @client.event
 async def on_ready():
     print(client.user.name + ' is ready!')
     print("ID: " + str(client.user.id))
+
+    client.add_cog(ChatAI(client))
+    client.add_cog(Music(client))
+
     activity = discord.Activity(name='my activity', type=discord.ActivityType.watching)
     await client.change_presence(status=discord.Status.dnd, activity=activity)
 
@@ -139,36 +112,6 @@ async def mute(ctx):
         response = await ctx.channel.send(":speak_no_evil: **{} was muted!**".format(target.mention))
         await asyncio.sleep(5)
         await response.delete()
-
-@client.command(pass_context=True)
-async def play(ctx):
-
-    channel = None
-
-    for vc in ctx.message.channel.guild.voice_channels:
-        if not len(vc.members) > 0:
-            avaliable = True
-        if avaliable:
-            for member in vc.members:
-                if member.id == ctx.author.id:
-                    channel = vc
-
-    if channel is None:
-        await ctx.send(':x: **Please join a voice channel**')
-        return
-
-    if (ctx.message.content.split()[1].lower().startswith('http://youtube.com/watch?v=')) or (ctx.message.content.split()[1].lower().startswith('https://youtube.com/watch?v=')):
-        async with ctx.typing():
-
-            url = ctx.message.content[1]
-            player = await YTDLSource.from_url(url, loop=client.loop)
-            if ctx.voice_client is None:
-                await channel.connect()
-                ctx.voice_client.play(player, after=lambda e: print('Player error: %s' % e) if e else None)
-
-                await ctx.send('Now playing: {}'.format(player.title))
-    else:
-        await ctx.send(':x: Please provide a youtube URL')
 
 @client.command(pass_context=True)
 async def bitcoin(ctx):
