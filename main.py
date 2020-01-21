@@ -32,7 +32,7 @@ async def changing_status():
 async def calculate_age(born):
     today = date.today()
     return today.year - born.year - ((today.month, today.day) < (born.month, born.day))
-
+"test"
 async def get_current_time():
     pm = False
     t = timelibrary.localtime()
@@ -201,7 +201,7 @@ async def google(ctx):
         content = content[1]
         await ctx.send(google(content))
     else:
-        await ctx.send('**!Google <Query>**')    
+        await ctx.send('**!Google <Query>**')
 
 @client.command(pass_context=True)
 async def say(ctx):
