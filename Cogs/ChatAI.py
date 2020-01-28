@@ -1,9 +1,5 @@
 import discord
 from discord.ext import commands
-# import pytorch
-
-# class DQN(nn.Module):
-#     pass
 
 class ChatAI(commands.Cog):
     def __init__(self, bot):
