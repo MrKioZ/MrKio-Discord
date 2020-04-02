@@ -7,3 +7,4 @@ iso-639
 praw
 google
 pynacl
+torch
