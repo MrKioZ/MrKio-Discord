@@ -281,7 +281,7 @@ async def userinfo(ctx):
         day_join = str(ctx.author.joined_at.day)
         embed.add_field(name="Joined Server", value=year_join+"/"+month_join+"/"+day_join, inline=True)
         age = await calculate_age(ctx.author.created_at)
-        embed.add_field(name="Account Age", value="About "+str(age)+" Years old!", inline=True)
+        embed.add_field(name="Account Age", value="About "+str(age), inline=True)
         embed.add_field(name="Highest Role", value=ctx.author.top_role.mention, inline=True)
         current_time = await get_current_time()
         embed.set_footer(text="Requested by " + ctx.author.name + "#" + ctx.author.discriminator + " at " + current_time)
