@@ -32,7 +32,14 @@ async def changing_status():
 
 async def calculate_age(born):
     today = date.today()
-    return today.year - born.year - ((today.month, today.day) < (born.month, born.day))
+    age = str(today.year - born.year - ((today.month, today.day) < (born.month, born.day))) + ' Years'
+    if today.year - born.year - ((today.month, today.day) < (born.month, born.day)) <= 0:
+        age = str(today.month - born.month - (today.day < born.day)) + ' Months'
+        if today.month - born.month - (today.day < born.day) <= 0:
+            age = str(today.day - born.day) + ' Days'
+            if today.day - born.day == 1:
+                age = str(today.day - born.day) + ' Day'
+    return age
 
 async def get_current_time():
     pm = False
@@ -227,7 +234,7 @@ async def serverinfo(ctx):
     embed.add_field(name="Created at", value=year_creation+"/"+month_creation+"/"+day_creation, inline=True)
     embed.add_field(name="Total Members", value=len(guild.members), inline=True)
     age = await calculate_age(guild.created_at)
-    embed.add_field(name="Server Age", value="About " + str(age) + " Years", inline=True)
+    embed.add_field(name="Server Age", value="About " + str(age), inline=True)
     embed.add_field(name="Server Owner", value=guild.owner.name+"#"+str(guild.owner.discriminator), inline=True)
     embed.add_field(name="Total Roles", value=len(guild.roles), inline=True)
     embed.add_field(name="Server Region", value=str(guild.region), inline=True)
@@ -257,7 +264,7 @@ async def userinfo(ctx):
         day_join = str(target.joined_at.day)
         embed.add_field(name="Joined Server", value=year_join+"/"+month_join+"/"+day_join, inline=True)
         age = await calculate_age(ctx.author.created_at)
-        embed.add_field(name="Account Age", value="About "+str(age)+" Years old!", inline=True)
+        embed.add_field(name="Account Age", value="About "+str(age), inline=True)
         embed.add_field(name="Highest Role", value=target.top_role.mention, inline=True)
         current_time = await get_current_time()
         embed.set_footer(text="Requested by " + ctx.author.name + "#" + ctx.author.discriminator + " at " + current_time)
