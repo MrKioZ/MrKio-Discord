@@ -127,13 +127,9 @@ class Music(commands.Cog):
 
             embed=discord.Embed(color=0xff171d, title="Playing now: "+player.title, url=player.main_url, description="Views: " + player.views + " | Likes: " + player.likes + " | Dislike: " + player.dislikes)
             embed.set_thumbnail(url=player.thumbnail)
+            
             embed.add_field(name="duration", value=player.duration, inline=True)
             embed.add_field(name="uploaded by", value=player.uploader, inline=True)
-
-            try:
-                embed.add_field(name="Description", value=player.desc, inline=True)
-            except:
-                pass
 
             embed.set_footer(text="Requested by " + ctx.author.name + "#" + ctx.author.discriminator)
             await ctx.send(embed=embed)
