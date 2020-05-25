@@ -1,6 +1,5 @@
-import asyncio
-
-import discord
+import asyncio, discord, shlex
+from discord import player
 import youtube_dl
 
 from discord.ext import commands
@@ -29,6 +28,43 @@ ffmpeg_options = {
 
 ytdl = youtube_dl.YoutubeDL(ytdl_format_options)
 
+class FFmpegPCMAudio(player.FFmpegPCMAudio):
+
+    def __init__(self, source, *, executable='ffmpeg', pipe=False, stderr=None,
+                 before_options=None, after_input=None, options=None,
+                 reconnect=True):
+
+        args = []
+        subprocess_kwargs = {'stdin': source if pipe else None, 'stderr': stderr}
+
+        if reconnect:
+            args.extend(('-reconnect', '1', '-reconnect_streamed', '1', '-reconnect_delay_max', '5'))
+
+        if isinstance(before_options, str):
+            args.extend(shlex.split(before_options))
+
+        args.append('-i')
+        args.append('-' if pipe else source)
+
+        if isinstance(after_input, str):
+            args.extend(shlex.split(after_input))
+
+        args.extend(('-f', 's16le',
+                     '-ar', '48000',
+                     '-ac', '2',
+                     '-loglevel', 'panic'))
+
+        if isinstance(options, str):
+            args.extend(shlex.split(options))
+
+        args.append('pipe:1')
+
+        # skipcq: PYL-E1003
+        # This is an intentional choice since we don't wanna call the parent
+        # init but instead the init of its parent
+        super(player.FFmpegPCMAudio, self).__init__(source, executable=executable,
+                                                    args=args, **subprocess_kwargs)
+
 
 class YTDLSource(discord.PCMVolumeTransformer):
     def __init__(self, source, *, data, volume=0.5):
@@ -37,7 +73,15 @@ class YTDLSource(discord.PCMVolumeTransformer):
         self.data = data
 
         self.title = data.get('title')
+        self.thumbnail = data.get('thumbnail')
+        self.uploader = data.get('uploader')
         self.url = data.get('url')
+        self.main_url = data.get('webpage_url')
+        self.desc = data.get('description')
+        self.views = str(data.get('view_count'))
+        self.likes = str(data.get('like_count'))
+        self.dislikes = str(data.get('dislike_count'))
+        self.duration = str(data.get('duration'))
 
     @classmethod
     async def from_url(cls, url, *, loop=None, stream=False):
@@ -49,7 +93,11 @@ class YTDLSource(discord.PCMVolumeTransformer):
             data = data['entries'][0]
 
         filename = data['url'] if stream else ytdl.prepare_filename(data)
-        return cls(discord.FFmpegPCMAudio(filename, **ffmpeg_options), data=data)
+
+        val = cls(FFmpegPCMAudio(filename, **ffmpeg_options), data=data)
+
+        return val
+
 
 
 class Music(commands.Cog):
@@ -72,17 +120,28 @@ class Music(commands.Cog):
 
     @commands.command()
     async def play(self, ctx, *, url):
-        """Streams from a url (same as yt, but doesn't predownload)"""
 
         async with ctx.typing():
             player = await YTDLSource.from_url(url, loop=self.bot.loop, stream=True)
-            ctx.voice_client.play(player)#, after=lambda e: print('Player error: %s' % e) if e else None)
+            ctx.voice_client.play(player, after=lambda e: print('Player error: %s' % e) if e else None)
 
-        await ctx.send(':musical_note: Now playing: **{}**'.format(player.title))
+            embed=discord.Embed(color=0xff171d, title="Playing now: "+player.title, url=player.main_url, description="Views: " + player.views + " | Likes: " + player.likes + " | Dislike: " + player.dislikes)
+            embed.set_thumbnail(url=player.thumbnail)
+            embed.add_field(name="duration", value=player.duration, inline=True)
+            embed.add_field(name="uploaded by", value=player.uploader, inline=True)
+
+            try:
+                embed.add_field(name="Description", value=player.desc, inline=True)
+            except:
+                pass
+
+            embed.set_footer(text="Requested by " + ctx.author.name + "#" + ctx.author.discriminator)
+            await ctx.send(embed=embed)
+
+        # await ctx.send(':musical_note: Now playing: **{}**'.format(player.title))
 
     @commands.command()
     async def volume(self, ctx, volume: int):
-        """Changes the player's volume"""
 
         if ctx.voice_client is None:
             return await ctx.send(":x: Not connected to a voice channel.")
