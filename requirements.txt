@@ -1,4 +1,4 @@
-discord.py==1.3.2
+discord.py
 discord.py[voice]
 requests==2.22.0
 youtube_dl
@@ -8,3 +8,5 @@ google==2.0.3
 pynacl
 https://download.pytorch.org/whl/cpu/torch-1.2.0%2Bcpu-cp37-cp37m-manylinux1_x86_64.whl
 langdetect==1.0.8
+beautifulsoup4
+aiohttp
