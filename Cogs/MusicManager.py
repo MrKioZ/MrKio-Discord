@@ -389,7 +389,7 @@ class Music(commands.Cog):
         # Grab up to 5 entries from the queue...
         upcoming = list(itertools.islice(player.queue._queue, 0, 5))
 
-        fmt = '\n'.join(str(i+1)+f'**`{_["title"]}`**' for i in upcoming)
+        fmt = '\n'.join(str(indx+1)+f'**`{i["title"]}`**' for indx, i in enumerate(upcoming))
         embed = discord.Embed(color=0xff171d, title=f'Upcoming - Next {len(upcoming)}', description=fmt)
 
         await ctx.send(embed=embed)
