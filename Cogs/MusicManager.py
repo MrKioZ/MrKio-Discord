@@ -217,7 +217,7 @@ class MusicPlayer:
 
             self._guild.voice_client.play(source, after=lambda _: self.bot.loop.call_soon_threadsafe(self.next.set))
 
-            self.np = await self._channel.send(":arrow_forward: **playing now** `" + source.title + "`")
+            self.np = await self._channel.send(":arrow_forward: **playing now** `" + source.title + "`", delete_after=10)
 
             await self.next.wait()
 
@@ -331,52 +331,57 @@ class Music(commands.Cog):
 
         player = self.get_player(ctx)
 
-        query = quote(search)
-        url = "https://www.youtube.com/results?search_query=" + query
-        query = await searchQuery(url)
+        if (not 'http://' in search) or (not 'https://' in search):
+            query = quote(search)
+            url = "https://www.youtube.com/results?search_query=" + query
+            query = await searchQuery(url)
 
-        result = ''
+            result = ''
 
-        urlz = []
-        for indx, i in enumerate(query.keys()):
-            urlz.append(i)
-            if indx == 0:
-                result += '**'+str(indx+1)+'**. `'+query[i]+'`'
-            else:
-                result += '\n\n**'+str(indx+1)+'**. `'+query[i]+'`'
+            urlz = []
+            for indx, i in enumerate(query.keys()):
+                urlz.append(i)
+                if indx == 0:
+                    result += '**'+str(indx+1)+'**. `'+query[i]+'`'
+                else:
+                    result += '\n\n**'+str(indx+1)+'**. `'+query[i]+'`'
 
-        embed = discord.Embed(color=0xff171d, title="Search Results", description=result)
-        embed.set_author(name="Requested Song", icon_url=ctx.author.avatar_url)
-        embed.set_footer(text="requested by "+str(ctx.author))
-        QueryMsg = await ctx.send(embed=embed, delete_after=61)
+            embed = discord.Embed(color=0xff171d, title="Search Results", description=result)
+            embed.set_author(name="Requested Song", icon_url=ctx.author.avatar_url)
+            embed.set_footer(text="requested by "+str(ctx.author))
+            QueryMsg = await ctx.send(embed=embed, delete_after=61)
 
-        await QueryMsg.add_reaction('1️⃣')
-        await QueryMsg.add_reaction('2️⃣')
-        await QueryMsg.add_reaction('3️⃣')
-        await QueryMsg.add_reaction('4️⃣')
-        await QueryMsg.add_reaction('5️⃣')
+            await QueryMsg.add_reaction('1️⃣')
+            await QueryMsg.add_reaction('2️⃣')
+            await QueryMsg.add_reaction('3️⃣')
+            await QueryMsg.add_reaction('4️⃣')
+            await QueryMsg.add_reaction('5️⃣')
 
-        check = lambda reaction, user: ctx.author == user
-        reaction = ''
-        try:
-            reaction, user = await self.bot.wait_for('reaction_add', timeout=60.0, check=check)
-            await QueryMsg.delete()
-        except asyncio.TimeoutError:
-            await ctx.send(':x: **you did not react fast enough**', delete_after=10)
-            await QueryMsg.delete()
+            check = lambda reaction, user: ctx.author == user
+            reaction = ''
+            try:
+                reaction, user = await self.bot.wait_for('reaction_add', timeout=60.0, check=check)
+                await QueryMsg.delete()
+            except asyncio.TimeoutError:
+                await ctx.send(':x: **you did not react fast enough**', delete_after=10)
+                await QueryMsg.delete()
 
-        if '1' in str(reaction):
-            source = await YTDLSource.create_source(ctx, urlz[0], loop=self.bot.loop, download=False)
-        elif '2' in str(reaction):
-            source = await YTDLSource.create_source(ctx, urlz[1], loop=self.bot.loop, download=False)
-        elif '3' in str(reaction):
-            source = await YTDLSource.create_source(ctx, urlz[2], loop=self.bot.loop, download=False)
-        elif '4' in str(reaction):
-            source = await YTDLSource.create_source(ctx, urlz[3], loop=self.bot.loop, download=False)
-        elif '5' in str(reaction):
-            source = await YTDLSource.create_source(ctx, urlz[4], loop=self.bot.loop, download=False)
+            if '1' in str(reaction):
+                source = await YTDLSource.create_source(ctx, urlz[0], loop=self.bot.loop, download=False)
+            elif '2' in str(reaction):
+                source = await YTDLSource.create_source(ctx, urlz[1], loop=self.bot.loop, download=False)
+            elif '3' in str(reaction):
+                source = await YTDLSource.create_source(ctx, urlz[2], loop=self.bot.loop, download=False)
+            elif '4' in str(reaction):
+                source = await YTDLSource.create_source(ctx, urlz[3], loop=self.bot.loop, download=False)
+            elif '5' in str(reaction):
+                source = await YTDLSource.create_source(ctx, urlz[4], loop=self.bot.loop, download=False)
 
-        print(urlz)
+        elif ('youtube' in search) or ('youtu.be' in search):
+            source = await YTDLSource.create_source(ctx, search, loop=self.bot.loop, download=False)
+        else:
+            await ctx.send(':x: **This is not a Youtube URL!**')
+            return
         # If download is False, source will be a dict which will be used later to regather the stream.
         # If download is True, source will be a FFmpegPCMAudio with a VolumeTransformer.
         #source = await YTDLSource.create_source(ctx, search, loop=self.bot.loop, download=False)
