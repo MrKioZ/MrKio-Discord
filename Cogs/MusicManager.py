@@ -1,10 +1,8 @@
-import discord
+import discord, asyncio, itertools, sys, traceback, time, aiohttp
+from urllib.parse import quote
+from bs4 import BeautifulSoup
 from discord.ext import commands
 from discord import player
-import asyncio
-import itertools
-import sys
-import traceback
 from async_timeout import timeout
 from functools import partial
 from youtube_dl import YoutubeDL
@@ -38,6 +36,24 @@ def human_format(num):
         num /= 1000.0
     # add more suffixes if you need them
     return '%.2f%s' % (num, ['', 'K', 'M', 'B', 'T', 'P'][magnitude])
+
+async def searchQuery(SELECTED_URL):
+    async with aiohttp.ClientSession() as session:
+        async with session.get(SELECTED_URL) as resp:
+            text = await resp.read()
+
+    soup = BeautifulSoup(text.decode('utf-8'), 'lxml')
+    videos = {}
+    for indx, vid in enumerate(soup.findAll(attrs={'class':'yt-uix-tile-link'})):
+
+        if 'watch' in vid['href']:
+            videos[('https://www.youtube.com' + vid['href'].split('&', 1)[0])] = vid['title']
+
+        if indx == 4:
+            break
+
+    return videos
+
 
 class FFmpegPCMAudio(player.FFmpegPCMAudio):
 
@@ -100,7 +116,7 @@ class YTDLSource(discord.PCMVolumeTransformer):
         self.views = human_format(data.get('view_count'))
         self.likes = human_format(data.get('like_count'))
         self.dislikes = human_format(data.get('dislike_count'))
-        self.duration = str(data.get('duration'))
+        self.duration = str(time.strftime('%H:%M:%S', time.gmtime(data.get('duration'))))
 
         # YTDL info dicts (data) have other useful information you might want
         # https://github.com/rg3/youtube-dl/blob/master/README.md
@@ -121,11 +137,12 @@ class YTDLSource(discord.PCMVolumeTransformer):
         if 'entries' in data:
             # take first item from a playlist
             data = data['entries'][0]
+        data['duration'] = str(time.strftime('%H:%M:%S', time.gmtime(int(data.get('duration'))))).replace('00:','')
 
         embed = discord.Embed(color=0xff171d, title=data.get("title"), url=str(data.get("webpage_url")), description="Views: " + human_format(data.get("view_count")) + " | Likes: " + human_format(data.get("like_count")) + " | Dislike: " + human_format(data.get("dislike_count")))
         embed.set_author(name="Added to Queue", icon_url=ctx.author.avatar_url)
         embed.set_thumbnail(url=data.get("thumbnail"))
-        embed.add_field(name="duration", value=data.get("duration"), inline=True)
+        embed.add_field(name="duration", value=data.get('duration'), inline=True)
         embed.add_field(name="uploaded by", value=data.get("uploader"), inline=True)
 
         embed.set_footer(text="Requested by " + str(ctx.author))
@@ -153,11 +170,6 @@ class YTDLSource(discord.PCMVolumeTransformer):
 
 
 class MusicPlayer:
-    """A class which is assigned to each guild using the bot for Music.
-    This class implements a queue and loop, which allows for different guilds to listen to different playlists
-    simultaneously.
-    When the bot disconnects from the Voice it's instance will be destroyed.
-    """
 
     __slots__ = ('bot', '_guild', '_channel', '_cog', 'queue', 'next', 'current', 'np', 'volume')
 
@@ -204,14 +216,6 @@ class MusicPlayer:
             self.current = source
 
             self._guild.voice_client.play(source, after=lambda _: self.bot.loop.call_soon_threadsafe(self.next.set))
-
-            # embed = discord.Embed(color=0xff171d, title=source.title, url=source.web_url, description="Views: " + source.views + " | Likes: " + source.likes + " | Dislike: " + source.dislikes)
-            # embed.set_author(name="Playing now", icon_url=source.requester.avatar_url)
-            # embed.set_thumbnail(url=source.thumbnail)
-            # embed.add_field(name="duration", value=source.duration, inline=True)
-            # embed.add_field(name="uploaded by", value=source.uploader, inline=True)
-            #
-            # embed.set_footer(text="Requested by " + str(source.requester))
 
             self.np = await self._channel.send(":arrow_forward: **playing now** `" + source.title + "`")
 
@@ -317,6 +321,7 @@ class Music(commands.Cog):
 
     @commands.command(name='play', aliases=['sing'])
     async def play_(self, ctx, *, search: str):
+
         await ctx.trigger_typing()
 
         vc = ctx.voice_client
@@ -326,9 +331,55 @@ class Music(commands.Cog):
 
         player = self.get_player(ctx)
 
+        query = quote(search)
+        url = "https://www.youtube.com/results?search_query=" + query
+        query = await searchQuery(url)
+
+        result = ''
+
+        urlz = []
+        for indx, i in enumerate(query.keys()):
+            urlz.append(i)
+            if indx == 0:
+                result += '**'+str(indx+1)+'**. `'+query[i]+'`'
+            else:
+                result += '\n\n**'+str(indx+1)+'**. `'+query[i]+'`'
+
+        embed = discord.Embed(color=0xff171d, title="Search Results", description=result)
+        embed.set_author(name="Requested Song", icon_url=ctx.author.avatar_url)
+        embed.set_footer(text="requested by "+str(ctx.author))
+        QueryMsg = await ctx.send(embed=embed, delete_after=61)
+
+        await QueryMsg.add_reaction('1️⃣')
+        await QueryMsg.add_reaction('2️⃣')
+        await QueryMsg.add_reaction('3️⃣')
+        await QueryMsg.add_reaction('4️⃣')
+        await QueryMsg.add_reaction('5️⃣')
+
+        check = lambda reaction, user: ctx.author == user
+        reaction = ''
+        try:
+            reaction, user = await self.bot.wait_for('reaction_add', timeout=60.0, check=check)
+            await QueryMsg.delete()
+        except asyncio.TimeoutError:
+            await ctx.send(':x: **you did not react fast enough**', delete_after=10)
+            await QueryMsg.delete()
+
+        if '1' in str(reaction):
+            source = await YTDLSource.create_source(ctx, urlz[0], loop=self.bot.loop, download=False)
+        elif '2' in str(reaction):
+            source = await YTDLSource.create_source(ctx, urlz[1], loop=self.bot.loop, download=False)
+        elif '3' in str(reaction):
+            source = await YTDLSource.create_source(ctx, urlz[2], loop=self.bot.loop, download=False)
+        elif '4' in str(reaction):
+            source = await YTDLSource.create_source(ctx, urlz[3], loop=self.bot.loop, download=False)
+        elif '5' in str(reaction):
+            source = await YTDLSource.create_source(ctx, urlz[4], loop=self.bot.loop, download=False)
+
+        print(urlz)
         # If download is False, source will be a dict which will be used later to regather the stream.
         # If download is True, source will be a FFmpegPCMAudio with a VolumeTransformer.
-        source = await YTDLSource.create_source(ctx, search, loop=self.bot.loop, download=False)
+        #source = await YTDLSource.create_source(ctx, search, loop=self.bot.loop, download=False)
 
         await player.queue.put(source)
 
@@ -439,8 +490,12 @@ class Music(commands.Cog):
         player.volume = vol / 100
         await ctx.send(f'**`{ctx.author}`**: Set the volume to **{vol}%**')
 
-    @commands.command(name='stop')
+    @commands.command(name='stop', aliases=['leave'])
     async def stop_(self, ctx):
+        """Stop the currently playing song and destroy the player.
+        !Warning!
+            This will destroy the player assigned to your guild, also deleting any queued songs and settings.
+        """
         vc = ctx.voice_client
 
         if not vc or not vc.is_connected():
