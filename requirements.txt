@@ -1,6 +1,6 @@
 discord.py
 discord.py[voice]
-requests==2.22.0
+requests==2.31.0
 youtube_dl
 iso-639
 praw==6.5.1
